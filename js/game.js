@@ -13,7 +13,7 @@ function initGame() {
     drawBackground();
     gameLoop();
 }
-
+ 
 function resize() {
     bg.width = window.innerWidth;
     bg.height = window.innerHeight;
@@ -43,3 +43,4 @@ function gameLoop() {
 
     // aquí después dibujamos frutas, canasta, bombas etc.
 }
+
