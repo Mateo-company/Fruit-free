@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Fruit free</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- ====== MENU PRINCIPAL ====== -->
+    <div id="menu" class="menuScreen">
+        <h1 class="title">Fruit free</h1>
+        <button class="btn" id="btnPlay">Jugar</button>
+        <button class="btn" id="btnOptions">Opciones</button>
+        <button class="btn" id="btnCredits">Créditos</button>
+    </div>
+
+    <!-- ====== SUBMENÚ OPCIONES ====== -->
+<div id="optionsMenu" class="submenu hidden">
+    <h2>Opciones</h2>
+
+    <div class="optionBlock">
+        <p>Música:</p>
+        <button class="btn small" id="btnMusic">ON</button>
+    </div>
+
+    <div class="optionBlock">
+        <p>Dificultad:</p>
+        <button class="btn small" id="btnDiff">Normal</button>
+    </div>
+
+    <button class="btn" id="btnBackOptions">Volver</button>
+</div>
+
+
+    <!-- ====== SUBMENÚ CRÉDITOS ====== -->
+    <div id="creditsMenu" class="submenu hidden">
+        <h2>Créditos del equipo</h2>
+        <p>Prograamción y codigo:Mateo</p>
+        <br>
+        <p>Nomre del juego: kiki</p>
+        <br>
+        <button class="btn" id="btnBackCredits">Volver</button>
+    </div>
+<!-- ====== SUBMENÚ MODOS DE JUEGO ====== -->
+<div id="gameModesMenu" class="submenu hidden">
+    <h2>Selecciona un Modo</h2>
+
+    <button class="btn" id="btnModeNormal">Modo Normal</button>
+    <button class="btn" id="btnModeInfinite">Modo Infinito</button>
+
+    <button class="btn" id="btnBackModes">Volver</button>
+</div>
+
+    <!-- ====== CAPA 1: FONDO ====== -->
+    <canvas id="background" class="hidden"></canvas>
+
+    <!-- ====== CAPA 2: JUEGO ====== -->
+    <canvas id="game" class="hidden"></canvas>
+
+    <!-- ====== CAPA 3: HUD ====== -->
+    <div id="hud" class="hidden">
+        <p>Puntos: <span id="score">0</span></p>
+        <p>Vidas: <span id="lives">3</span></p>
+    </div>
+
+    <script src="js/menu.js"></script>
+    <script src="js/game.js"></script>
+
+</body>
+</html>
