@@ -1,45 +1,51 @@
-let bg, gameCanvas;
-let bgCtx, gameCtx;
+let gameCanvas, gameCtx;
+let bgImageData = null;
+const VIRTUAL_WIDTH = 320;
+const VIRTUAL_HEIGHT = 240;
+let lastTimestamp = 0;
+let currentMode = "Normal";
 
 function initGame() {
-    bg = document.getElementById("background");
-    gameCanvas = document.getElementById("game");
-
-    bgCtx = bg.getContext("2d");
+    gameCanvas = document.getElementById("gameCanvas");
     gameCtx = gameCanvas.getContext("2d");
-
-    resize();
-
-    drawBackground();
-    gameLoop();
+    resizeCanvas();
+    createPersistentBackground();
+    lastTimestamp = performance.now();
+    requestAnimationFrame(gameLoop);
 }
 
-function resize() {
-    bg.width = window.innerWidth;
-    bg.height = window.innerHeight;
-    gameCanvas.width = window.innerWidth;
-    gameCanvas.height = window.innerHeight;
+function resizeCanvas() {
+    gameCanvas.width = VIRTUAL_WIDTH;
+    gameCanvas.height = VIRTUAL_HEIGHT;
 }
 
-function drawBackground() {
-    bgCtx.fillStyle = "black";
-    bgCtx.fillRect(0, 0, bg.width, bg.height);
-
-    // Pixel decor random
+function createPersistentBackground() {
+    gameCtx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
     for (let i = 0; i < 150; i++) {
-        bgCtx.fillStyle = i % 2 === 0 ? "#ff0077" : "#00eaff";
-        bgCtx.fillRect(
-            Math.random() * bg.width, 
-            Math.random() * bg.height, 
-            3, 
-            3
+        gameCtx.fillStyle = i % 2 === 0 ? "#ff0077" : "#00eaff";
+        gameCtx.fillRect(
+            Math.floor(Math.random() * VIRTUAL_WIDTH),
+            Math.floor(Math.random() * VIRTUAL_HEIGHT),
+            3, 3
         );
     }
+    bgImageData = gameCtx.getImageData(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 }
 
-function gameLoop() {
-    requestAnimationFrame(gameLoop);
-    gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+function update(dt) {
+    // Aquí puedes usar currentMode para ajustar dificultad
+}
 
-    // aquí después dibujamos frutas, canasta, bombas etc.
+function draw() {
+    if (bgImageData) gameCtx.putImageData(bgImageData, 0, 0);
+    else gameCtx.clearRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+}
+
+function gameLoop(ts) {
+    requestAnimationFrame(gameLoop);
+    const now = ts || performance.now();
+    const dt = (now - lastTimestamp) / 1000;
+    lastTimestamp = now;
+    update(dt);
+    draw();
 }
