@@ -3,73 +3,90 @@ const menu = document.getElementById("menu");
 const optionsMenu = document.getElementById("optionsMenu");
 const creditsMenu = document.getElementById("creditsMenu");
 const gameModes   = document.getElementById("gameModesMenu");
+const gameScene   = document.getElementById("gameScene");
+const ui = document.getElementById("ui");
 
-const bg = document.getElementById("background");
-const game = document.getElementById("game");
-const hud = document.getElementById("hud");
-
-// ====== BOTONES ======
+// Botones principales
 const btnPlay = document.getElementById("btnPlay");
 const btnOptions = document.getElementById("btnOptions");
 const btnCredits = document.getElementById("btnCredits");
+
+// Botones volver
 const btnBackOptions = document.getElementById("btnBackOptions");
 const btnBackCredits = document.getElementById("btnBackCredits");
-const btnBackModes = document.getElementById("btnBackModes");
+const btnBackModes   = document.getElementById("btnBackModes");
 
-
-// ====== MENU PRINCIPAL → SUBMENÚ OPCIONES ======
-btnOptions.addEventListener("click", () => {
-    menu.classList.add("hidden");
-    optionsMenu.classList.remove("hidden");
-});
-
-// ====== SUBMENÚ OPCIONES → MENU ======
-btnBackOptions.addEventListener("click", () => {
-    optionsMenu.classList.add("hidden");
-    menu.classList.remove("hidden");
-});
-
-// ====== MENU PRINCIPAL → SUBMENÚ CRÉDITOS ======
-btnCredits.addEventListener("click", () => {
-    menu.classList.add("hidden");
-    creditsMenu.classList.remove("hidden");
-});
-
-// ====== SUBMENÚ CRÉDITOS → MENU ======
-btnBackCredits.addEventListener("click", () => {
-    creditsMenu.classList.add("hidden");
-    menu.classList.remove("hidden");
-});
-
-
-// ====== OPCIONES: MÚSICA ======
+// Opciones: música y dificultad
 const musicBtn = document.getElementById("btnMusic");
 let musicOn = true;
+const diffBtn = document.getElementById("btnDiff");
+let diffModes = ["Normal", "Difícil", "Caótico"];
+let diffIndex = 0;
 
+// Version
+const versionBox = document.getElementById("versionBox");
+
+// Modos de juego
+const btnModeNormal = document.getElementById("btnModeNormal");
+const btnModeInfinite = document.getElementById("btnModeInfinite");
+
+const menus = [menu, optionsMenu, creditsMenu, gameModes];
+
+// ====== FUNCIONES ======
+function hideAllMenus() {
+    menus.forEach(m => m.classList.add("hidden"));
+}
+
+function showMenu(target) {
+    hideAllMenus();
+    let el = (typeof target === "string") ? document.getElementById(target) : target;
+    if (el) el.classList.remove("hidden");
+}
+
+function showVersion() { versionBox.style.display = "block"; }
+function hideVersion() { versionBox.style.display = "none"; }
+
+// Mostrar versión al inicio
+showVersion();
+
+// ====== LISTENERS ======
+
+// Abrir menú de modos al dar "Jugar"
+btnPlay.addEventListener("click", () => {
+    showMenu(gameModes);
+});
+
+// Opciones
+btnOptions.addEventListener("click", () => showMenu(optionsMenu));
+btnBackOptions.addEventListener("click", () => { showMenu(menu); showVersion(); });
+
+// Créditos
+btnCredits.addEventListener("click", () => showMenu(creditsMenu));
+btnBackCredits.addEventListener("click", () => { showMenu(menu); showVersion(); });
+
+// Música ON/OFF
 musicBtn.addEventListener("click", () => {
     musicOn = !musicOn;
     musicBtn.textContent = musicOn ? "ON" : "OFF";
 });
 
-// ====== OPCIONES: DIFICULTAD ======
-const diffBtn = document.getElementById("btnDiff");
-let diffModes = ["Normal", "Difícil", "Caótico"];
-let diffIndex = 0;
-
+// Cambiar dificultad
 diffBtn.addEventListener("click", () => {
     diffIndex = (diffIndex + 1) % diffModes.length;
     diffBtn.textContent = diffModes[diffIndex];
 });
 
+// Modos de juego
+function startGame(mode) {
+    hideVersion();
+    ui.classList.add("hidden");
+    gameScene.classList.remove("hidden");
+    currentMode = mode;
+    initGame();
+    console.log("Modo de juego:", mode);
+}
 
-// ====== TRANSICIÓN MENU → MODOS DE JUEGO ======
-btnPlay.addEventListener("click", () => {
-    menu.classList.add("hidden");
-            gameModes.classList.remove("hidden"); 
-});
+btnModeNormal.addEventListener("click", () => startGame("Normal"));
+btnModeInfinite.addEventListener("click", () => startGame("Infinito"));
 
-// ====== MODOS DE JUEGO → MENU ======
-btnBackModes.addEventListener("click", () => {
-    gameModes.classList.add("hidden");
-            menu.classList.remove("hidden");
-});
+btnBackModes.addEventListener("click", () => { showMenu(menu); showVersion(); });
