@@ -1,3 +1,19 @@
+/* ====== VERSIONES ====== */
+#versionBox {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(13, 5, 255, 0.6);
+    color: white;
+    padding: 6px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    z-index: 9999;
+    font-family: Arial, sans-serif;
+    pointer-events: none; /* Para que no interfiera con clics */
+}
+
+/* ====== BODY ====== */
 body {
     margin: 0;
     background: black;
@@ -5,49 +21,39 @@ body {
     color: white;
 }
 
-/* ===== MENU ===== */
-#menu {
-    position: absolute;
-    inset: 0;
-    background: black;
+/* Centrado reutilizable */
+.center {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* Para subirlo - reduce el margen superior */
-    margin-top: 0;
-    /* o un valor negativo para subirlo más */
-    margin-top: -500px;
 }
 
+/* ====== MENÚ PRINCIPAL ====== */
+#menu {
+    position: absolute;
+    inset: 0;
+    background: black;
+}
+
+/* título */
 .title {
-    font-size: 150px;
+    font-size: 60px;
     color: #ffcc00;
     text-shadow: 0 0 8px #ffcc00;
     animation: titleGlow 2s infinite alternate;
+    justify-content: center;
 }
 
-/* Animación del brillo RGB */
+/* Animación RGB del título */
 @keyframes titleGlow {
-    0% {
-        color: #ff0044;
-        text-shadow: 0 0 10px #ff0044, 0 0 20px #ff0044;
-    }
-    33% {
-        color: #00eaff;
-        text-shadow: 0 0 10px #00eaff, 0 0 20px #00eaff;
-    }
-    66% {
-        color: #8aff00;
-        text-shadow: 0 0 10px #8aff00, 0 0 20px #8aff00;
-    }
-    100% {
-        color: #ffcc00;
-        text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00;
-    }
+    0%   { color: #ff0044; text-shadow: 0 0 10px #ff0044, 0 0 20px #ff0044; }
+    33%  { color: #00eaff; text-shadow: 0 0 10px #00eaff, 0 0 20px #00eaff; }
+    66%  { color: #8aff00; text-shadow: 0 0 10px #8aff00, 0 0 20px #8aff00; }
+    100% { color: #ffcc00; text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00; }
 }
 
-
+/* ====== BOTONES ====== */
 .btn {
     padding: 22px 45px;
     margin: 8px;
@@ -55,64 +61,33 @@ body {
     border: 2px solid #ffcc00;
     color: #ffcc00;
     cursor: pointer;
-    font-size: 100px;
+    font-size: 30px;
     transition: 0.2s;
     box-shadow: 0 0 6px #ffcc00, 0 0 12px #ffcc00;
     animation: glow 1.5s infinite alternate;
 }
 
-/* Brillo en hover */
 .btn:hover {
     background: #ffcc00;
     color: black;
     box-shadow: 0 0 10px #ff8800, 0 0 20px #ff2200, 0 0 35px #ff0000;
 }
 
-/* Animación RGB suave */
+.btn.small {
+    padding: 14px 30px;
+    font-size: 25px;
+}
+
+/* Animación glow RGB de botones */
 @keyframes glow {
-    0% {
-        border-color: #ff0044;
-        box-shadow: 0 0 8px #ff0044, 0 0 16px #ff0044;
-    }
-    33% {
-        border-color: #00eeff;
-        box-shadow: 0 0 8px #00eeff, 0 0 16px #00eeff;
-    }
-    66% {
-        border-color: #8aff00;
-        box-shadow: 0 0 8px #8aff00, 0 0 16px #8aff00;
-    }
-    100% {
-        border-color: #ffcc00;
-        box-shadow: 0 0 8px #ffcc00, 0 0 16px #ffcc00;
-    }
+    0%   { border-color: #ff0044; box-shadow: 0 0 8px #ff0044, 0 0 16px #ff0044; }
+    33%  { border-color: #00eeff; box-shadow: 0 0 8px #00eeff, 0 0 16px #00eeff; }
+    66%  { border-color: #8aff00; box-shadow: 0 0 8px #8aff00, 0 0 16px #8aff00; }
+    100% { border-color: #ffcc00; box-shadow: 0 0 8px #ffcc00, 0 0 16px #ffcc00; }
 }
 
-
-.btn:hover {
-    background: #ffcc00;
-    color: black;
-}
-
-/* ===== CANVAS ===== */
-canvas {
-    position: absolute;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    image-rendering: pixelated;
-}
-
-/* ===== HUD ===== */
-#hud {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 20px;
-    
-}
+/* ====== SUBMENÚS ====== */
 .submenu {
-    display: none;
     position: absolute;
     inset: 0;
     background: black;
@@ -124,9 +99,16 @@ canvas {
     justify-content: center;
     align-items: center;
 }
-.hidden {
-    display: none;
+
+.submenu h2 {
+    font-size: 50px;
+    color: #fff;
+    text-shadow: 0 0 10px #2306ff, 0 0 20px #01b3ff, 0 0 30px #cc00ff;
+    margin: 0;
+    letter-spacing: 2px;
+    text-align: center;
 }
+
 .optionBlock {
     display: flex;
     justify-content: center;
@@ -134,43 +116,24 @@ canvas {
     gap: 15px;
     margin-bottom: 20px;
 }
-
-/* 🔥 AUMENTAMOS EL TAMAÑO DEL TEXTO */
+/*de opciones */
 .optionBlock p {
-    font-size: 60px;   /* antes 16px — ahora grande y visible */
-    font-weight: bold; /* opcional, pero queda más bonito */
+    font-size: 40px;
+    font-weight: bold;
     color: white;
 }
 
-/* 🔥 Botones más grandes también */
-.btn.small {
-    padding: 14px 30px;
-    font-size: 60px;
-}
-.submenu h2 {
-    font-size: 150px;
-    color: rgb(255, 255, 255);
-    text-shadow: 0 0 10px #ff00ff,
-                 0 0 20px #ff0088,
-                 0 0 30px #cc00ff;
-    margin: 0;            /* elimina márgenes problemáticos */
-    letter-spacing: 2px;
-    text-align: center;
-
-    /* Centrado vertical exacto */
-    top: 50%;
-    transform: translateY(-50%);
-}
-
-
+/* Créditos */
 #creditsMenu p {
-    font-size: 60.5px;          /* TAMAÑO GRANDE */
+    font-size: 25px;
     color: white;
     text-align: center;
     margin-bottom: 25px;
     line-height: 1.5;
-    text-shadow: 0 0 6px #ffffff88; /* leve glow bonito */
+    text-shadow: 0 0 6px #ffffff88;
 }
+
+/* Modos de juego */
 #gameModesMenu .btn {
     margin-bottom: 15px;
 }
@@ -180,8 +143,8 @@ canvas {
     margin-bottom: 25px;
     text-shadow: 0 0 10px #00ffff, 0 0 20px #00aaff;
 }
- 
 
+/* ====== ANIMACIONES FADE ====== */
 @keyframes fadeOut {
     from { opacity: 1; filter: blur(0px); }
     to   { opacity: 0; filter: blur(4px); }
@@ -190,4 +153,69 @@ canvas {
 @keyframes fadeIn {
     from { opacity: 0; filter: blur(4px); }
     to   { opacity: 1; filter: blur(0px); }
+}
+
+/* ====== ESCENA DEL JUEGO ====== */
+#gameScene {
+    width: 100%;
+    max-width: 960px;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+    height: 700px; /* ajustable */
+    background: #000; /* fondo negro mientras carga */
+    display: none; /* comienza oculta */
+    z-index: 1;
+}
+
+/* Fondo del juego (imagen debajo del canvas) */
+#gameBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    image-rendering: pixelated;
+    pointer-events: none;
+    object-fit: cover;
+}
+
+/* Contenedor del canvas */
+#gameContainer {
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    position: relative;
+    aspect-ratio: 320 / 240;
+    image-rendering: pixelated;
+    z-index: 1;
+}
+
+/* Canvas del juego */
+#gameCanvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* HUD: puntos y vidas */
+#hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    z-index: 2;
+    pointer-events: none;
+    color: #fff;
+    text-shadow: 0 0 5px #000;
+}
+
+/* Ocultar elementos */
+.hidden {
+    display: none;
 }
