@@ -48,6 +48,27 @@
             <button class="btn" id="btnBackCredits">Volver</button>
         </div>
 
+        <!-- ====== SUBMENÚ NOVEDADES ====== -->
+       <div id="newsMenu" class="submenu hidden center">
+     <h2>Novedades</h2>
+
+     <div class="newsBox">
+        <p>🟢 v1.0.0 🟢</p>
+        <p>🟡Novedades: 🟡</p>
+        <p>Mejoras graficas</p>
+        <p>Creditos</p>
+        <hr>
+        <p>Gracias por jugar Fruit Free.</p>
+<p>Esta es la primera versión del juego.</p>
+<p>Tu feedback es importante para futuras actualizaciones.</p>
+        
+       
+     </div>
+
+     <button class="btn" id="btnBackNews">Volver</button>
+     </div>
+
+
         <!-- ====== SUBMENÚ MODOS DE JUEGO ====== -->
         <div id="gameModesMenu" class="submenu hidden center">
             <h2>Selecciona un Modo</h2>
@@ -56,10 +77,42 @@
             <button class="btn" id="btnBackModes">Volver</button>
         </div>
 
-    </div>
+     </div>
+     <!-- ====== SUBMENÚ SUGERENCIAS ====== -->
+<div id="suggestMenu" class="submenu hidden center">
+    <h2>Sugerencias</h2>
 
-    <!-- ====== ESCENA DEL JUEGO ====== -->
-    <div id="gameScene" class="hidden" aria-hidden="true">
+    <form id="suggestForm" action="https://formspree.io/f/xyzrqlbr" method="POST" class="suggestBox">
+        
+        <label>
+            ¿Quién eres? (opcional)
+            <input type="text" name="usuario" placeholder="Usuario">
+        </label>
+
+        <label>
+            Tu sugerencia
+            <textarea name="sugerencia" required placeholder="Escribe tu idea aquí..."></textarea>
+        </label>
+
+        <button type="submit" class="btn small">Enviar</button>
+    </form>
+    
+
+    <button class="btn" id="btnBackSuggest">Volver</button>
+</div>
+<!-- OVERLAY DE GRACIAS -->
+<div id="thanksOverlay" class="overlay hidden">
+    <div class="thanksBox">
+        <h3>¡Gracias por tu sugerencia! 💖</h3>
+        <p>Tu idea nos ayuda a mejorar Fruit Free.</p>
+        <button class="btn small" id="btnThanksBack">Volver</button>
+    </div>
+</div>
+
+
+
+      <!-- ====== ESCENA DEL JUEGO ====== -->
+     <div id="gameScene" class="hidden" aria-hidden="true">
         <!-- Fondo estático (fuera del canvas, debajo) -->
         <img id="gameBackground" src="fondo.png" alt="Fondo del juego" />
 
@@ -73,8 +126,8 @@
             <p>Puntos: <span id="score">0</span></p>
             <p>Vidas: <span id="lives">3</span></p>
         </div>
-    </div>
-    <script src="js/menu.js"></script>
+      </div>
+      <script src="js/menu.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>
