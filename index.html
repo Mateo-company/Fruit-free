@@ -2,15 +2,17 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Fruit Free</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<div id="versionBox">v1.0.0</div>
 
 <body>
 
-    <!-- Contenedor general del UI -->
+    <!-- VERSION -->
+    <div id="versionBox">v1.0.0</div>
+
+    <!-- ====== UI GENERAL ====== -->
     <div id="ui">
 
         <!-- ====== MENU PRINCIPAL ====== -->
@@ -19,11 +21,11 @@
             <button class="btn" id="btnPlay">Jugar</button>
             <button class="btn" id="btnOptions">Opciones</button>
             <button class="btn" id="btnCredits">Créditos</button>
-            <button class="btn" id="btncalific">sugerencias</button>
-            <button class="btn" id="btnmjrs">Novendades</button>
+            <button class="btn" id="btncalific">Sugerencias</button>
+            <button class="btn" id="btnmjrs">Novedades</button>
         </div>
 
-        <!-- ====== SUBMENÚ OPCIONES ====== -->
+        <!-- ====== OPCIONES ====== -->
         <div id="optionsMenu" class="submenu hidden center">
             <h2>Opciones</h2>
 
@@ -40,7 +42,7 @@
             <button class="btn" id="btnBackOptions">Volver</button>
         </div>
 
-        <!-- ====== SUBMENÚ CRÉDITOS ====== -->
+        <!-- ====== CRÉDITOS ====== -->
         <div id="creditsMenu" class="submenu hidden center">
             <h2>Créditos del equipo</h2>
             <p>Programación y código: Mateo</p>
@@ -48,86 +50,94 @@
             <button class="btn" id="btnBackCredits">Volver</button>
         </div>
 
-        <!-- ====== SUBMENÚ NOVEDADES ====== -->
-       <div id="newsMenu" class="submenu hidden center">
-     <h2>Novedades</h2>
+        <!-- ====== NOVEDADES ====== -->
+        <div id="newsMenu" class="submenu hidden center">
+            <h2>Novedades</h2>
 
-     <div class="newsBox">
-        <p>🟢 v1.0.0 🟢</p>
-        <p>🟡Novedades: 🟡</p>
-        <p>Mejoras graficas</p>
-        <p>Creditos</p>
-        <hr>
-        <p>Gracias por jugar Fruit Free.</p>
-<p>Esta es la primera versión del juego.</p>
-<p>Tu feedback es importante para futuras actualizaciones.</p>
-        
-       
-     </div>
+            <div class="newsBox">
+                <p>🟢 v1.0.0</p>
+                <p>🟡 Novedades:</p>
+                <p>Mejoras gráficas</p>
+                <p>Créditos</p>
+                <hr>
+                <p>Gracias por jugar Fruit Free.</p>
+                <p>Esta es la primera versión del juego.</p>
+                <p>Tu opinión es importante para futuras actualizaciones.</p>
+            </div>
 
-     <button class="btn" id="btnBackNews">Volver</button>
-     </div>
+            <button class="btn" id="btnBackNews">Volver</button>
+        </div>
 
-
-        <!-- ====== SUBMENÚ MODOS DE JUEGO ====== -->
+        <!-- ====== MODOS DE JUEGO ====== -->
         <div id="gameModesMenu" class="submenu hidden center">
             <h2>Selecciona un Modo</h2>
             <button class="btn" id="btnModeNormal">Modo Normal</button>
-            <button class="btn" id="btnModeInfinite">Modo Infinito</button>
+            <button class="btn" id="btnModeDificil">Modo Difícil</button>
             <button class="btn" id="btnBackModes">Volver</button>
         </div>
 
-     </div>
-     <!-- ====== SUBMENÚ SUGERENCIAS ====== -->
-<div id="suggestMenu" class="submenu hidden center">
-    <h2>Sugerencias</h2>
+        <!-- ====== SUGERENCIAS ====== -->
+        <div id="suggestMenu" class="submenu hidden center">
+            <h2>Sugerencias</h2>
 
-    <form id="suggestForm" action="https://formspree.io/f/xyzrqlbr" method="POST" class="suggestBox">
-        
-        <label>
-            ¿Quién eres? (opcional)
-            <input type="text" name="usuario" placeholder="Usuario">
-        </label>
+            <form id="suggestForm"
+                  action="https://formspree.io/f/xyzrqlbr"
+                  method="POST"
+                  class="suggestBox">
 
-        <label>
-            Tu sugerencia
-            <textarea name="sugerencia" required placeholder="Escribe tu idea aquí..."></textarea>
-        </label>
+                <label>
+                    ¿Quién eres? (opcional)
+                    <input type="text" name="usuario" placeholder="Usuario">
+                </label>
 
-        <button type="submit" class="btn small">Enviar</button>
-    </form>
-    
+                <label>
+                    Tu sugerencia
+                    <textarea name="sugerencia" required placeholder="Escribe tu idea aquí..."></textarea>
+                </label>
 
-    <button class="btn" id="btnBackSuggest">Volver</button>
-</div>
-<!-- OVERLAY DE GRACIAS -->
-<div id="thanksOverlay" class="overlay hidden">
-    <div class="thanksBox">
-        <h3>¡Gracias por tu sugerencia! 💖</h3>
-        <p>Tu idea nos ayuda a mejorar Fruit Free.</p>
-        <button class="btn small" id="btnThanksBack">Volver</button>
+                <button type="submit" class="btn small">Enviar</button>
+            </form>
+
+            <button class="btn" id="btnBackSuggest">Volver</button>
+        </div>
+
     </div>
-</div>
 
+    <!-- ====== OVERLAY GRACIAS ====== -->
+    <div id="thanksOverlay" class="overlay hidden">
+        <div class="thanksBox">
+            <h3>¡Gracias por tu sugerencia! 💖</h3>
+            <p>Tu idea nos ayuda a mejorar Fruit Free.</p>
+            <button class="btn small" id="btnThanksBack">Volver</button>
+        </div>
+    </div>
 
+    <!-- ====== ESCENA DEL JUEGO ====== -->
+    <div id="gameScene" class="hidden" aria-hidden="true">
 
-      <!-- ====== ESCENA DEL JUEGO ====== -->
-     <div id="gameScene" class="hidden" aria-hidden="true">
-        <!-- Fondo estático (fuera del canvas, debajo) -->
-        <img id="gameBackground" src="fondo.png" alt="Fondo del juego" />
-
-        <!-- Canvas del juego (sprites, objetos) -->
         <div id="gameContainer">
             <canvas id="gameCanvas"></canvas>
         </div>
 
-        <!-- HUD -->
         <div id="hud">
-            <p>Puntos: <span id="score">0</span></p>
-            <p>Vidas: <span id="lives">3</span></p>
+            <div id="scoreBox">Score: <span id="score">0</span></div>
+            <div id="livesBox">Lives: <span id="lives">3</span></div>
+            <button id="pauseBtn">PAUSA</button>
         </div>
-      </div>
-      <script src="js/menu.js"></script>
+
+        <div id="pauseOverlay" class="hidden">
+            <div class="pauseBox">
+                <h2>Pausa</h2>
+                <button id="resumeBtn">Continuar</button>
+                <button id="menuBtn">Menú</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/menu.js"></script>
     <script src="js/game.js"></script>
+
 </body>
 </html>
