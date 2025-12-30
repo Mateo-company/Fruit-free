@@ -1,27 +1,18 @@
-/* ====== VERSIONES ====== */
-#versionBox {
-    position: fixed;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(13, 5, 255, 0.6);
-    color: white;
-    padding: 6px 12px;
-    font-size: 14px;
-    border-radius: 8px;
-    z-index: 9999;
-    font-family: Arial, sans-serif;
-    pointer-events: none; /* Para que no interfiera con clics */
-}
-
-/* ====== BODY ====== */
+/* =========================
+   BASE
+========================= */
 body {
     margin: 0;
-    background: black;
+    background-color: #005ec8;
     font-family: monospace;
     color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Centrado reutilizable */
+.hidden { display: none !important; }
+
 .center {
     display: flex;
     flex-direction: column;
@@ -29,23 +20,37 @@ body {
     align-items: center;
 }
 
-/* ====== MENÚ PRINCIPAL ====== */
+/* =========================
+   VERSION
+========================= */
+#versionBox {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(13, 5, 255, 0.6);
+    color: white;
+    padding: 6px 12px;
+    font-size: clamp(10px, 1.5vw, 14px);
+    border-radius: 8px;
+    z-index: 9999;
+    font-family: Arial, sans-serif;
+    pointer-events: none;
+}
+
+/* =========================
+   MENU PRINCIPAL
+========================= */
 #menu {
     position: absolute;
     inset: 0;
     background: black;
 }
 
-/* título */
 .title {
-    font-size: 60px;
-    color: #ffcc00;
-    text-shadow: 0 0 8px #ffcc00;
+    font-size: clamp(30px, 5vw, 60px);
     animation: titleGlow 2s infinite alternate;
-    justify-content: center;
 }
 
-/* Animación RGB del título */
 @keyframes titleGlow {
     0%   { color: #ff0044; text-shadow: 0 0 10px #ff0044, 0 0 20px #ff0044; }
     33%  { color: #00eaff; text-shadow: 0 0 10px #00eaff, 0 0 20px #00eaff; }
@@ -53,17 +58,18 @@ body {
     100% { color: #ffcc00; text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00; }
 }
 
-/* ====== BOTONES ====== */
+/* =========================
+   BOTONES
+========================= */
 .btn {
-    padding: 22px 45px;
+    padding: clamp(12px, 2vw, 22px) clamp(20px, 3vw, 45px);
     margin: 8px;
     background: #111;
     border: 2px solid #ffcc00;
     color: #ffcc00;
     cursor: pointer;
-    font-size: 30px;
+    font-size: clamp(20px, 4vw, 30px);
     transition: 0.2s;
-    box-shadow: 0 0 6px #ffcc00, 0 0 12px #ffcc00;
     animation: glow 1.5s infinite alternate;
 }
 
@@ -74,148 +80,213 @@ body {
 }
 
 .btn.small {
-    padding: 14px 30px;
-    font-size: 25px;
+    padding: clamp(8px, 1.5vw, 14px) clamp(15px, 2vw, 30px);
+    font-size: clamp(15px, 3vw, 25px);
 }
 
-/* Animación glow RGB de botones */
 @keyframes glow {
-    0%   { border-color: #ff0044; box-shadow: 0 0 8px #ff0044, 0 0 16px #ff0044; }
-    33%  { border-color: #00eeff; box-shadow: 0 0 8px #00eeff, 0 0 16px #00eeff; }
-    66%  { border-color: #8aff00; box-shadow: 0 0 8px #8aff00, 0 0 16px #8aff00; }
-    100% { border-color: #ffcc00; box-shadow: 0 0 8px #ffcc00, 0 0 16px #ffcc00; }
+    0%   { border-color: #ff0044; box-shadow: 0 0 8px #ff0044; }
+    33%  { border-color: #00eeff; box-shadow: 0 0 8px #00eeff; }
+    66%  { border-color: #8aff00; box-shadow: 0 0 8px #8aff00; }
+    100% { border-color: #ffcc00; box-shadow: 0 0 8px #ffcc00; }
 }
 
-/* ====== SUBMENÚS ====== */
+/* =========================
+   SUBMENÚS
+========================= */
 .submenu {
     position: absolute;
     inset: 0;
     background: black;
-    color: white;
-    font-family: monospace;
-    text-align: center;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-align: center;
 }
 
 .submenu h2 {
-    font-size: 50px;
-    color: #fff;
+    font-size: clamp(25px, 5vw, 50px);
     text-shadow: 0 0 10px #2306ff, 0 0 20px #01b3ff, 0 0 30px #cc00ff;
-    margin: 0;
-    letter-spacing: 2px;
-    text-align: center;
 }
 
 .optionBlock {
     display: flex;
-    justify-content: center;
-    align-items: center;
     gap: 15px;
     margin-bottom: 20px;
 }
-/*de opciones */
+
 .optionBlock p {
-    font-size: 40px;
+    font-size: clamp(20px, 4vw, 40px);
     font-weight: bold;
-    color: white;
 }
 
-/* Créditos */
+/* =========================
+   CREDITOS
+========================= */
 #creditsMenu p {
-    font-size: 25px;
-    color: white;
-    text-align: center;
+    font-size: clamp(14px, 2.5vw, 25px);
     margin-bottom: 25px;
-    line-height: 1.5;
     text-shadow: 0 0 6px #ffffff88;
 }
 
-/* Modos de juego */
-#gameModesMenu .btn {
-    margin-bottom: 15px;
+/* =========================
+   NOVEDADES
+========================= */
+.newsBox {
+    background: rgba(0,0,0,0.6);
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffff;
+    padding: 25px 35px;
+    max-width: 500px;
 }
 
-#gameModesMenu h2 {
-    font-size: 48px;
-    margin-bottom: 25px;
-    text-shadow: 0 0 10px #00ffff, 0 0 20px #00aaff;
+.newsBox p {
+    font-size: clamp(14px, 2.5vw, 25px);
 }
 
-/* ====== ANIMACIONES FADE ====== */
-@keyframes fadeOut {
-    from { opacity: 1; filter: blur(0px); }
-    to   { opacity: 0; filter: blur(4px); }
+/* =========================
+   SUGERENCIAS
+========================= */
+.suggestBox {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background: rgba(0,0,0,0.6);
+    padding: 25px 35px;
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 12px #ff00ff, 0 0 24px #00ffff;
+    max-width: 500px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; filter: blur(4px); }
-    to   { opacity: 1; filter: blur(0px); }
+.suggestBox input,
+.suggestBox textarea {
+    background: black;
+    border: 2px solid #ffcc00;
+    color: white;
+    padding: 10px;
+    font-size: clamp(12px, 2vw, 18px);
 }
 
-/* ====== ESCENA DEL JUEGO ====== */
+/* =========================
+   OVERLAY
+========================= */
+.overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+
+.thanksBox {
+    background: black;
+    border: 2px solid #00ffcc;
+    box-shadow: 0 0 15px #ff00ff, 0 0 30px #00ffff;
+    padding: 30px 40px;
+    text-align: center;
+    font-size: clamp(14px, 2.5vw, 20px);
+}
+
+/* =========================
+   ESCENA DEL JUEGO
+========================= */
 #gameScene {
     width: 100%;
-    max-width: 960px;
-    margin: 20px auto;
+    max-width: 640px;
+    margin: 30px auto;
     position: relative;
     overflow: hidden;
-    height: 700px; /* ajustable */
-    background: #000; /* fondo negro mientras carga */
-    display: none; /* comienza oculta */
-    z-index: 1;
+    aspect-ratio: 3 / 3;
+    background-color: #4A90E2;
+    border: 6px solid;
+    border-image-slice: 1;
+    animation: rgbBorder 3s linear infinite;
 }
 
-/* Fondo del juego (imagen debajo del canvas) */
-#gameBackground {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    image-rendering: pixelated;
-    pointer-events: none;
-    object-fit: cover;
+@keyframes rgbBorder {
+    0%   { border-color: red; }
+    16%  { border-color: orange; }
+    33%  { border-color: yellow; }
+    50%  { border-color: green; }
+    66%  { border-color: rgb(8,230,196); }
+    68%  { border-color: #005ec8; }
+    83%  { border-color: indigo; }
+    100% { border-color: violet; }
 }
 
-/* Contenedor del canvas */
-#gameContainer {
-    width: 100%;
-    max-width: 640px;
-    margin: 0 auto;
-    position: relative;
-    aspect-ratio: 320 / 240;
-    image-rendering: pixelated;
-    z-index: 1;
-}
-
-/* Canvas del juego */
-#gameCanvas {
-    width: 100%;
-    height: 100%;
-    image-rendering: pixelated;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-}
-
-/* HUD: puntos y vidas */
+/* =========================
+   HUD
+========================= */
 #hud {
     position: absolute;
     top: 10px;
     left: 10px;
-    font-size: 24px;
-    z-index: 2;
-    pointer-events: none;
-    color: #fff;
-    text-shadow: 0 0 5px #000;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    z-index: 100;
+    flex-wrap: wrap;
+    font-size: calc(1vw + 1vh);
 }
 
-/* Ocultar elementos */
-.hidden {
+#hud div {
+    background: rgba(0,0,0,0.6);
+    border: 2px solid;
+    border-image: linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet) 1;
+    padding: 0.5em 0.8em;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 3px black;
+    border-radius: 6px;
+}
+
+/* =========================
+   BOTONES HUD
+========================= */
+#pauseBtn, #resumeBtn, #menuBtn {
+    padding: 0.5em 1em;
+    font-size: inherit;
+    cursor: pointer;
+    border-radius: 6px;
+    background: #111;
+    color: #ffcc00;
+    border: 2px solid #ffcc00;
+    transition: 0.2s;
+}
+
+#pauseBtn:hover, #resumeBtn:hover, #menuBtn:hover {
+    background: #ffcc00;
+    color: black;
+    box-shadow: 0 0 10px #ff8800, 0 0 20px #ff2200;
+}
+
+/* =========================
+   OVERLAY PAUSA
+========================= */
+#pauseOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+#pauseOverlay.hidden {
     display: none;
+}
+
+.pauseBox {
+    background: black;
+    border: 2px solid #00ffcc;
+    box-shadow: 0 0 15px #ff00ff, 0 0 30px #00ffff;
+    padding: 2em 3em;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    font-size: calc(1vw + 1vh);
 }
