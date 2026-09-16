@@ -6,10 +6,10 @@ body {
     background-color: #005ec8;
     font-family: monospace;
     color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
 }
+
 
 .hidden { display: none !important; }
 
@@ -193,12 +193,12 @@ body {
    ESCENA DEL JUEGO
 ========================= */
 #gameScene {
-    width: 100%;
-    max-width: 640px;
-    margin: 30px auto;
+    width: min(calc(100vw - 24px), 960px);
+    max-width: 960px;
+    margin: min(30px, 2vh) auto;
     position: relative;
     overflow: hidden;
-    aspect-ratio: 3 / 3;
+    aspect-ratio: 4 / 3;
     background-color: #4A90E2;
     border: 6px solid;
     border-image-slice: 1;
@@ -228,7 +228,7 @@ body {
     align-items: center;
     z-index: 100;
     flex-wrap: wrap;
-    font-size: calc(1vw + 1vh);
+    font-size: clamp(12px, 2vw, 18px);
 }
 
 #hud div {
@@ -241,6 +241,31 @@ body {
     text-shadow: 0 0 3px black;
     border-radius: 6px;
 }
+
+#touchControls {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 20;
+}
+
+.touchBtn {
+    pointer-events: auto;
+    width: 58px;
+    height: 48px;
+    border: 2px solid #fff;
+    border-radius: 12px;
+    color: #fff;
+    background: rgba(0, 27, 73, .6);
+    font-size: 22px;
+    touch-action: none;
+}
+
+.touchBtn:active { background: #ffcc00; color: #111; }
 
 /* =========================
    BOTONES HUD
@@ -266,13 +291,13 @@ body {
    OVERLAY PAUSA
 ========================= */
 #pauseOverlay {
-    position: absolute;
+    position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.85);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 200;
+    z-index: 9999;
 }
 
 #pauseOverlay.hidden {
@@ -289,4 +314,48 @@ body {
     flex-direction: column;
     gap: 1em;
     font-size: calc(1vw + 1vh);
+}
+/* =========================
+   GAME OVER UI
+========================= */
+.gameOverBox {
+    background: black;
+    border: 3px solid #ff0044;
+    box-shadow: 0 0 20px #ff0044, 0 0 40px #ff2200;
+    padding: 2.5em 3em;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    max-width: 90%;
+}
+
+.gameOverTitle {
+    font-size: clamp(40px, 7vw, 70px);
+    color: #ff0044;
+    text-shadow: 0 0 15px #ff0044;
+    margin-bottom: 0.5em;
+}
+
+.gameOverText {
+    font-size: clamp(18px, 3vw, 28px);
+}
+
+.gameOverRecord {
+    font-size: clamp(20px, 3.5vw, 32px);
+    color: #ffcc00;
+    text-shadow: 0 0 10px #ffcc00;
+    margin-bottom: 1em;
+}
+
+@media (min-width: 700px) { #touchControls { display: none; } }
+
+@media (max-width: 699px) {
+    #gameScene {
+        width: min(calc(100vw - 16px), calc((100dvh - 16px) * 4 / 3));
+        max-width: none;
+        margin: 8px auto;
+    }
+    #hud { top: 8px; left: 8px; gap: 6px; }
+    #hud div { padding: .35em .5em; }
 }
