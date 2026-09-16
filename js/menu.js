@@ -5,40 +5,39 @@ const ui = document.getElementById("ui");
 const gameScene = document.getElementById("gameScene");
 const versionBox = document.getElementById("versionBox");
 
-// Menús
+/* ===== MENÚS ===== */
 const menu = document.getElementById("menu");
 const optionsMenu = document.getElementById("optionsMenu");
 const creditsMenu = document.getElementById("creditsMenu");
-const gameModesMenu = document.getElementById("gameModesMenu");
 const newsMenu = document.getElementById("newsMenu");
 const suggestMenu = document.getElementById("suggestMenu");
 
-const menus = [menu, optionsMenu, creditsMenu, gameModesMenu, newsMenu, suggestMenu];
+const menus = [
+    menu,
+    optionsMenu,
+    creditsMenu,
+    newsMenu,
+    suggestMenu
+];
 
-// Botones principales
+/* ===== BOTONES PRINCIPALES ===== */
 const btnPlay = document.getElementById("btnPlay");
 const btnOptions = document.getElementById("btnOptions");
 const btnCredits = document.getElementById("btnCredits");
 const btnNews = document.getElementById("btnmjrs");
 const btnSuggest = document.getElementById("btncalific");
 
-// Botones volver
+/* ===== BOTONES VOLVER ===== */
 const btnBackOptions = document.getElementById("btnBackOptions");
 const btnBackCredits = document.getElementById("btnBackCredits");
 const btnBackModes = document.getElementById("btnBackModes");
 const btnBackNews = document.getElementById("btnBackNews");
 const btnBackSuggest = document.getElementById("btnBackSuggest");
 
-// Opciones
+/* ===== OPCIONES ===== */
 const musicBtn = document.getElementById("btnMusic");
-const diffBtn = document.getElementById("btnDiff");
 
-// Modos de juego
-const btnModeNormal = document.getElementById("btnModeNormal");
-const btnModeDificil = document.getElementById("btnModeDificil");
-
-
-// Sugerencias
+/* ===== SUGERENCIAS ===== */
 const suggestForm = document.getElementById("suggestForm");
 const thanksOverlay = document.getElementById("thanksOverlay");
 const btnThanksBack = document.getElementById("btnThanksBack");
@@ -47,12 +46,9 @@ const btnThanksBack = document.getElementById("btnThanksBack");
    ESTADO
 ========================= */
 let musicOn = true;
-let diffModes = ["Normal", "Difícil", "Caótico"];
-let diffIndex = 0;
-let currentMode = "Normal";
 
 /* =========================
-   FUNCIONES
+   FUNCIONES BASE
 ========================= */
 function hideAllMenus() {
     menus.forEach(m => m.classList.add("hidden"));
@@ -64,53 +60,65 @@ function showMenu(target) {
 }
 
 function showMainMenu() {
-    showMenu(menu);
+    hideAllMenus();
+    menu.classList.remove("hidden");
+
     versionBox.style.display = "block";
     ui.classList.remove("hidden");
-    gameScene.classList.add("hidden"); // asegurarse de ocultar el juego
-}
-
-function startGame(mode) {
-    versionBox.style.display = "none";
-    ui.classList.add("hidden");
-    gameScene.classList.remove("hidden"); // mostrar canvas
-    currentMode = mode;
-    gamePaused = false;
-    initGame(); // llamar al juego
+    gameScene.classList.add("hidden");
 }
 
 /* =========================
-   EVENTOS
+   INICIAR JUEGO
 ========================= */
-// Menú principal
-btnPlay.onclick = () => showMenu(gameModesMenu);
+function startGame() {
+    versionBox.style.display = "none";
+    ui.classList.add("hidden");
+    gameScene.classList.remove("hidden");
+
+    initGame(); // viene de game.js
+}
+
+/* =========================
+   EVENTOS - MENÚ
+========================= */
+btnPlay.onclick = startGame;
 btnOptions.onclick = () => showMenu(optionsMenu);
 btnCredits.onclick = () => showMenu(creditsMenu);
 btnNews.onclick = () => showMenu(newsMenu);
+
 btnSuggest.onclick = () => {
     thanksOverlay.classList.add("hidden");
     suggestForm.reset();
     showMenu(suggestMenu);
 };
 
-// Volver
+/* =========================
+   EVENTOS - VOLVER
+========================= */
 btnBackOptions.onclick = showMainMenu;
 btnBackCredits.onclick = showMainMenu;
-btnBackModes.onclick = showMainMenu;
 btnBackNews.onclick = showMainMenu;
-btnBackSuggest.onclick = () => { suggestForm.reset(); showMainMenu(); };
 
-// Opciones
-musicBtn.onclick = () => { musicOn = !musicOn; musicBtn.textContent = musicOn ? "ON" : "OFF"; };
-diffBtn.onclick = () => { diffIndex = (diffIndex + 1) % diffModes.length; diffBtn.textContent = diffModes[diffIndex]; };
+btnBackSuggest.onclick = () => {
+    suggestForm.reset();
+    showMainMenu();
+};
 
-// Modos de juego
-btnModeNormal.onclick = () => startGame("Normal");
-btnModeDificil.onclick = () => startGame("Dificil");
+/* =========================
+   OPCIONES
+========================= */
+musicBtn.onclick = () => {
+    musicOn = !musicOn;
+    musicBtn.textContent = musicOn ? "ON" : "OFF";
+};
 
-// Sugerencias
+/* =========================
+   SUGERENCIAS
+========================= */
 suggestForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     const userInput = suggestForm.querySelector('input[name="usuario"]');
     if (!userInput.value.trim()) userInput.value = "Usuario";
 
@@ -118,8 +126,9 @@ suggestForm.addEventListener("submit", async (e) => {
         await fetch(suggestForm.action, {
             method: "POST",
             body: new FormData(suggestForm),
-            headers: { "Accept": "application/json" }
+            headers: { Accept: "application/json" }
         });
+
         thanksOverlay.classList.remove("hidden");
     } catch {
         alert("Error al enviar 😭");
@@ -132,5 +141,7 @@ btnThanksBack.onclick = () => {
     showMainMenu();
 };
 
-// Mostrar versión al inicio
+/* =========================
+   INIT
+========================= */
 showMainMenu();
