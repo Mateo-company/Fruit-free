@@ -3,6 +3,12 @@ const spriteGood = new Image();
 spriteGood.src = "assets/sprites/Manzana.png";
 const spriteBad = new Image();
 spriteBad.src = "assets/sprites/ManzanaMala.png";
+const goodSprites = [spriteGood];
+for (const name of ["Naranja.png", "Kiwi.png", "cherry.png"]) {
+  const sprite = new Image();
+  sprite.src = `assets/sprites/${name}`;
+  goodSprites.push(sprite);
+}
 const spriteBasket = new Image();
 spriteBasket.src = "assets/sprites/Canasta.png";
 
@@ -42,8 +48,14 @@ function resizeCanvas() {
 function spawnFruit() {
   const goodChance = .46;
   const speed = Math.min(95 + Math.floor(elapsedTime / 15) * 14 + Math.random() * 35, 310);
-  const size = 27 + Math.random() * 5;
-  fruits.push({ x: (Math.floor(Math.random() * COLUMNS) + .5) * (VIRTUAL_WIDTH / COLUMNS), y: -size, r: size / 2, size, speed, good: Math.random() < goodChance });
+  const good = Math.random() < goodChance;
+  // El dibujo es grande, pero el radio de colisión se mantiene pequeño y justo.
+  const size = 48 + Math.random() * 8;
+  fruits.push({
+    x: (Math.floor(Math.random() * COLUMNS) + .5) * (VIRTUAL_WIDTH / COLUMNS),
+    y: -size, r: 9, size, speed, good,
+    sprite: good ? goodSprites[Math.floor(Math.random() * goodSprites.length)] : spriteBad
+  });
 }
 function burst(x, y, color) { for (let i = 0; i < 8; i++) particles.push({ x, y, vx: (Math.random() - .5) * 75, vy: (Math.random() - .5) * 75, life: .45, color }); }
 function loseLife() { lives--; combo = 0; if (lives <= 0) triggerGameOver(); }
@@ -59,7 +71,11 @@ function update(dt) {
   if (spawnTimer >= interval) { spawnFruit(); spawnTimer = 0; }
   for (let i = fruits.length - 1; i >= 0; i--) {
     const f = fruits[i]; f.y += f.speed * dt;
-    const caught = f.x + f.r > player.x && f.x - f.r < player.x + player.width && f.y + f.r > player.y && f.y - f.r < player.y + player.height;
+    const caught =
+      f.x > player.x + 18 &&
+      f.x < player.x + player.width - 18 &&
+      f.y + f.r > player.y + 8 &&
+      f.y - f.r < player.y + player.height - 4;
     if (caught) { if (f.good) { combo++; score += combo >= 5 ? 2 : 1; burst(f.x, f.y, "#9dff3e"); } else { loseLife(); burst(f.x, f.y, "#ff4b5c"); } fruits.splice(i, 1); continue; }
     if (f.y - f.r > VIRTUAL_HEIGHT) { if (f.good) { combo = 0; score = Math.max(0, score - 1); } fruits.splice(i, 1); }
   }
@@ -73,7 +89,7 @@ function draw() {
   const sky = gameCtx.createLinearGradient(0, 0, 0, VIRTUAL_HEIGHT); sky.addColorStop(0, "#59c8ff"); sky.addColorStop(1, "#0876c9"); gameCtx.fillStyle = sky; gameCtx.fillRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
   gameCtx.fillStyle = "rgba(255,255,255,.2)"; for (let x = 20; x < VIRTUAL_WIDTH; x += 75) { gameCtx.beginPath(); gameCtx.arc(x, 35 + x % 50, 13, 0, Math.PI * 2); gameCtx.fill(); }
   for (const f of fruits) {
-    const image = f.good ? spriteGood : spriteBad;
+    const image = f.sprite;
     if (image.complete && image.naturalWidth) gameCtx.drawImage(image, f.x - f.size / 2, f.y - f.size / 2, f.size, f.size);
     else { gameCtx.fillStyle = f.good ? "#e83f49" : "#4b354b"; gameCtx.beginPath(); gameCtx.arc(f.x, f.y, f.r, 0, Math.PI * 2); gameCtx.fill(); }
   }
