@@ -1,212 +1,94 @@
-let gameCanvas, gameCtx;
+/* Fruit Free — motor de juego */
+const spriteGood = new Image();
+spriteGood.src = "assets/sprites/Manzana.png";
+const spriteBad = new Image();
+spriteBad.src = "assets/sprites/ManzanaMala.png";
+const spriteBasket = new Image();
+spriteBasket.src = "assets/sprites/Canasta.png";
 
-const VIRTUAL_WIDTH = 320;
-const VIRTUAL_HEIGHT = 240;
-const COLUMNS = 8;
-const COLUMN_WIDTH = VIRTUAL_WIDTH / COLUMNS;
+const VIRTUAL_WIDTH = 320, VIRTUAL_HEIGHT = 240, COLUMNS = 8;
+const player = { width: 56, height: 28, x: 132, y: 198, speed: 420, vx: 0 };
+const keys = { left: false, right: false };
+let gameCanvas, gameCtx, lastTimestamp = 0, animationId = 0;
+let fruits = [], particles = [], spawnTimer = 0, elapsedTime = 0;
+let score = 0, lives = 3, gamePaused = false, gameOver = false, combo = 0;
 
-let lastTimestamp = 0;
-let elapsedTime = 0;
+const pauseBtn = document.getElementById("pauseBtn"), pauseOverlay = document.getElementById("pauseOverlay");
+const resumeBtn = document.getElementById("resumeBtn"), menuBtn = document.getElementById("menuBtn");
+const gameOverOverlay = document.getElementById("gameOverOverlay"), finalScoreText = document.getElementById("finalScore");
+const finalRecordText = document.getElementById("finalRecord");
+const retryBtn = document.getElementById("retryBtn"), backMenuBtn = document.getElementById("backMenuBtn");
+const scoreText = document.getElementById("score"), livesText = document.getElementById("lives");
 
-const COLOR_PLAYER = "#b1540d";
-const COLOR_GOOD = "#088408";
-const COLOR_BAD = "#af0d0d";
-const COLOR_BG = "#005ec8";
-
-const player = { width:40, height:12, x:VIRTUAL_WIDTH/2-20, y:VIRTUAL_HEIGHT-20, speed:200, vx:0 };
-const keys = { left:false, right:false };
-let fruits = [];
-let spawnTimer = 0;
-const INITIAL_SPAWN_INTERVAL = 1.2;
-
-let score = 0, lives = 3;
-let gamePaused = false;
-
-// ====== ELEMENTOS DE PAUSA ======
-const pauseBtn = document.getElementById("pauseBtn");
-const pauseOverlay = document.getElementById("pauseOverlay");
-const resumeBtn = document.getElementById("resumeBtn");
-const menuBtn = document.getElementById("menuBtn");
-
-// ====== LIMITES DE VELOCIDAD ======
-const MAX_SPEED_NORMAL = 300;    
-const MAX_SPEED_DIFICIL = 450;
-
-
-// ====== SPAWN DE FRUTAS ======
-function spawnFruit() {
-    const goodChance = 0.35; // más frutas buenas
-    const isGood = Math.random() < goodChance;
-
-    // Velocidad base inicial más alta + escalado con tiempo
-    let speed = (isGood ? 150 : 170) + Math.floor(elapsedTime / 10) * 25;
-
-    // Incremento progresivo para modo Infinito
-    if(currentMode === "Dificil") {
-    speed += Math.floor(elapsedTime / 30) * 15;
-     }
- 
-
-    // Aplicar límites según modo
-    if(currentMode === "Normal") speed = Math.min(speed, MAX_SPEED_NORMAL);
-    if(currentMode === "Dificil") speed = Math.min(speed, MAX_SPEED_DIFICIL);
-
-
-    // Columnas disponibles
-    let availableColumns;
-    if(isGood){
-        const playerCol = Math.floor(player.x / COLUMN_WIDTH);
-        availableColumns = [playerCol];
-        if(playerCol > 0 && Math.random() < 0.6) availableColumns.push(playerCol-1); // más probabilidad adyacente
-        if(playerCol < COLUMNS-1 && Math.random() < 0.6) availableColumns.push(playerCol+1);
-    } else {
-        const occupiedCols = fruits.map(f => f.column);
-        availableColumns = [...Array(COLUMNS).keys()].filter(c => !occupiedCols.includes(c) || Math.random() < 0.5); // más spawn
-    }
-
-    // Elegir columna evitando repeticiones cercanas
-    let col, tries = 0;
-    do {
-        col = availableColumns[Math.floor(Math.random()*availableColumns.length)];
-        tries++;
-    } while(fruits.some(f => f.column === col && f.y < 50) && tries < 10);
-
-    fruits.push({ column: col, x: col*COLUMN_WIDTH+COLUMN_WIDTH/2, y: -8, r: 6, speed: speed, good: isGood });
-}
-
-// ====== RESET ======
+function recordKey() { return "fruitFree_record"; }
+function getRecord() { return Number(localStorage.getItem(recordKey())) || 0; }
+function saveRecord() { if (score > getRecord()) localStorage.setItem(recordKey(), score); }
 function resetGame() {
-    score = 0;
-    lives = 3;
-    fruits = [];
-    elapsedTime = 0;
-    spawnTimer = 0;
-    player.x = VIRTUAL_WIDTH / 2 - player.width / 2;
+  score = 0; lives = 3; combo = 0; fruits = []; particles = []; spawnTimer = 0; elapsedTime = 0;
+  gameOver = false; gamePaused = false; keys.left = false; keys.right = false; player.x = (VIRTUAL_WIDTH - player.width) / 2;
+  scoreText.textContent = score; livesText.textContent = "❤❤❤";
 }
-
-// ====== INIT ======
 function initGame() {
-    gameCanvas = document.getElementById("gameCanvas");
-    gameCtx = gameCanvas.getContext("2d");
-    resizeCanvas();
-    resetGame();
-    lastTimestamp = performance.now();
-    requestAnimationFrame(gameLoop);
+  cancelAnimationFrame(animationId); gameCanvas = document.getElementById("gameCanvas"); gameCtx = gameCanvas.getContext("2d");
+  resizeCanvas(); resetGame(); lastTimestamp = performance.now(); animationId = requestAnimationFrame(gameLoop);
 }
-
 function resizeCanvas() {
-    const scene = document.getElementById("gameScene");
-    gameCanvas.width = scene.clientWidth;
-    gameCanvas.height = scene.clientHeight;
+  if (!gameCanvas) return;
+  const scene = document.getElementById("gameScene"), ratio = window.devicePixelRatio || 1;
+  gameCanvas.width = scene.clientWidth * ratio; gameCanvas.height = scene.clientHeight * ratio;
+  // En móvil la canasta queda por encima de los controles táctiles.
+  player.y = window.matchMedia("(max-width: 699px)").matches ? 166 : 194;
 }
-
-// ====== UPDATE ======
-function update(dt){
-    elapsedTime += dt;
-
-    player.vx = 0;
-    let speedBoost = Math.min(Math.floor(elapsedTime/10)*10,120);
-    const currentSpeed = player.speed + speedBoost;
-    if(keys.left) player.vx=-currentSpeed;
-    if(keys.right) player.vx=currentSpeed;
-    player.x+=player.vx*dt;
-
-    if(player.x<0) player.x=0;
-    if(player.x+player.width>VIRTUAL_WIDTH) player.x=VIRTUAL_WIDTH-player.width;
-
-    spawnTimer += dt;
-    let spawnInterval = Math.max(INITIAL_SPAWN_INTERVAL - elapsedTime/40, 0.25); // más spawn al inicio
-    if(currentMode === "Dificil") spawnInterval *= 0.6; // aún más rápido en Dificil// el modo esta en menu
-    if(spawnTimer >= spawnInterval){ spawnFruit(); spawnTimer=0; }
-
-    for(let i=fruits.length-1;i>=0;i--){
-        const f = fruits[i];
-        f.y += f.speed*dt;
-
-        if(f.x>player.x && f.x<player.x+player.width &&
-           f.y+f.r>player.y && f.y-f.r<player.y+player.height){
-            if(f.good) score++; else lives--;
-            fruits.splice(i,1);
-            continue;
-        }
-        if(f.y > VIRTUAL_HEIGHT+10) fruits.splice(i,1);
-    }
-
-    document.getElementById("score").textContent=score;
-    document.getElementById("lives").textContent=lives;
+function spawnFruit() {
+  const goodChance = .46;
+  const speed = Math.min(95 + Math.floor(elapsedTime / 15) * 14 + Math.random() * 35, 310);
+  const size = 27 + Math.random() * 5;
+  fruits.push({ x: (Math.floor(Math.random() * COLUMNS) + .5) * (VIRTUAL_WIDTH / COLUMNS), y: -size, r: size / 2, size, speed, good: Math.random() < goodChance });
 }
-
-// ====== DRAW ======
-function draw(){
-    gameCtx.setTransform(1,0,0,1,0,0);
-    gameCtx.clearRect(0,0,gameCanvas.width,gameCanvas.height);
-
-    const scale = Math.min(gameCanvas.width/VIRTUAL_WIDTH, gameCanvas.height/VIRTUAL_HEIGHT);
-    const offsetX = (gameCanvas.width - VIRTUAL_WIDTH*scale)/2;
-    const offsetY = (gameCanvas.height - VIRTUAL_HEIGHT*scale)/2;
-
-    gameCtx.translate(offsetX,offsetY);
-    gameCtx.scale(scale,scale);
-
-    gameCtx.fillStyle=COLOR_BG;
-    gameCtx.fillRect(0,0,VIRTUAL_WIDTH,VIRTUAL_HEIGHT);
-
-    gameCtx.fillStyle=COLOR_PLAYER;
-    gameCtx.fillRect(player.x,player.y,player.width,player.height);
-
-    for(const f of fruits){
-        gameCtx.beginPath();
-        gameCtx.arc(f.x,f.y,f.r,0,Math.PI*2);
-        gameCtx.fillStyle=f.good?COLOR_GOOD:COLOR_BAD;
-        gameCtx.fill();
-    }
+function burst(x, y, color) { for (let i = 0; i < 8; i++) particles.push({ x, y, vx: (Math.random() - .5) * 75, vy: (Math.random() - .5) * 75, life: .45, color }); }
+function loseLife() { lives--; combo = 0; if (lives <= 0) triggerGameOver(); }
+function triggerGameOver() {
+  gameOver = true; gamePaused = true; saveRecord(); finalScoreText.textContent = score; finalRecordText.textContent = getRecord();
+  gameOverOverlay.classList.remove("hidden");
 }
-
-// ====== LOOP ======
-function gameLoop(ts){
-    if(!gamePaused){
-        requestAnimationFrame(gameLoop);
-        const dt = (ts - lastTimestamp)/1000;
-        lastTimestamp = ts;
-        update(dt);
-        draw();
-    }
+function update(dt) {
+  elapsedTime += dt; player.vx = keys.left ? -player.speed : keys.right ? player.speed : 0;
+  player.x = Math.max(0, Math.min(VIRTUAL_WIDTH - player.width, player.x + player.vx * dt));
+  spawnTimer += dt;
+  const interval = Math.max(.3, 1.02 - elapsedTime / 150);
+  if (spawnTimer >= interval) { spawnFruit(); spawnTimer = 0; }
+  for (let i = fruits.length - 1; i >= 0; i--) {
+    const f = fruits[i]; f.y += f.speed * dt;
+    const caught = f.x + f.r > player.x && f.x - f.r < player.x + player.width && f.y + f.r > player.y && f.y - f.r < player.y + player.height;
+    if (caught) { if (f.good) { combo++; score += combo >= 5 ? 2 : 1; burst(f.x, f.y, "#9dff3e"); } else { loseLife(); burst(f.x, f.y, "#ff4b5c"); } fruits.splice(i, 1); continue; }
+    if (f.y - f.r > VIRTUAL_HEIGHT) { if (f.good) { combo = 0; score = Math.max(0, score - 1); } fruits.splice(i, 1); }
+  }
+  particles = particles.filter(p => (p.life -= dt) > 0); for (const p of particles) { p.x += p.vx * dt; p.y += p.vy * dt; }
+  scoreText.textContent = score; livesText.textContent = "❤".repeat(Math.max(0, lives));
 }
-
-// ====== PAUSA ======
-pauseBtn.addEventListener("click", () => {
-    gamePaused = true;
-    pauseOverlay.classList.remove("hidden");
-});
-
-resumeBtn.addEventListener("click", () => {
-    gamePaused = false;
-    pauseOverlay.classList.add("hidden");
-    const gameScene = document.getElementById("gameScene");
-    gameScene.classList.remove("hidden");
-    resizeCanvas();
-    lastTimestamp = performance.now();
-    requestAnimationFrame(gameLoop);
-});
-
-menuBtn.addEventListener("click", () => {
-    gamePaused = true;
-    pauseOverlay.classList.add("hidden");
-    document.getElementById("gameScene").classList.add("hidden");
-    document.getElementById("ui").classList.remove("hidden");
-    resetGame();
-});
-
-// ====== TECLADO ======
-window.addEventListener("keydown", e=>{
-    if(e.key==="ArrowLeft"||e.key==="a") keys.left=true;
-    if(e.key==="ArrowRight"||e.key==="d") keys.right=true;
-});
-
-window.addEventListener("keyup", e=>{
-    if(e.key==="ArrowLeft"||e.key==="a") keys.left=false;
-    if(e.key==="ArrowRight"||e.key==="d") keys.right=false;
-});
-
-// ====== AJUSTE DE VENTANA ======
+function draw() {
+  const width = gameCanvas.width, height = gameCanvas.height, scale = Math.min(width / VIRTUAL_WIDTH, height / VIRTUAL_HEIGHT);
+  const ox = (width - VIRTUAL_WIDTH * scale) / 2, oy = (height - VIRTUAL_HEIGHT * scale) / 2;
+  gameCtx.setTransform(1, 0, 0, 1, 0, 0); gameCtx.clearRect(0, 0, width, height); gameCtx.setTransform(scale, 0, 0, scale, ox, oy);
+  const sky = gameCtx.createLinearGradient(0, 0, 0, VIRTUAL_HEIGHT); sky.addColorStop(0, "#59c8ff"); sky.addColorStop(1, "#0876c9"); gameCtx.fillStyle = sky; gameCtx.fillRect(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+  gameCtx.fillStyle = "rgba(255,255,255,.2)"; for (let x = 20; x < VIRTUAL_WIDTH; x += 75) { gameCtx.beginPath(); gameCtx.arc(x, 35 + x % 50, 13, 0, Math.PI * 2); gameCtx.fill(); }
+  for (const f of fruits) {
+    const image = f.good ? spriteGood : spriteBad;
+    if (image.complete && image.naturalWidth) gameCtx.drawImage(image, f.x - f.size / 2, f.y - f.size / 2, f.size, f.size);
+    else { gameCtx.fillStyle = f.good ? "#e83f49" : "#4b354b"; gameCtx.beginPath(); gameCtx.arc(f.x, f.y, f.r, 0, Math.PI * 2); gameCtx.fill(); }
+  }
+  if (spriteBasket.complete && spriteBasket.naturalWidth) gameCtx.drawImage(spriteBasket, player.x, player.y, player.width, player.height); else { gameCtx.fillStyle = "#b96a24"; gameCtx.fillRect(player.x, player.y, player.width, player.height); }
+  for (const p of particles) { gameCtx.globalAlpha = p.life * 2; gameCtx.fillStyle = p.color; gameCtx.fillRect(p.x - 2, p.y - 2, 4, 4); } gameCtx.globalAlpha = 1;
+  if (combo >= 5) { gameCtx.fillStyle = "#fff"; gameCtx.font = "bold 12px monospace"; gameCtx.textAlign = "center"; gameCtx.fillText(`¡RACHA x${combo}!`, 160, 28); }
+}
+function gameLoop(ts) { if (gamePaused) return; const dt = Math.min(.05, (ts - lastTimestamp) / 1000); lastTimestamp = ts; update(dt); draw(); animationId = requestAnimationFrame(gameLoop); }
+function resumeGame() { if (gameOver) return; gamePaused = false; pauseOverlay.classList.add("hidden"); lastTimestamp = performance.now(); animationId = requestAnimationFrame(gameLoop); }
+pauseBtn.onclick = () => { if (!gameOver) { gamePaused = true; pauseOverlay.classList.remove("hidden"); } };
+resumeBtn.onclick = resumeGame;
+menuBtn.onclick = () => { pauseOverlay.classList.add("hidden"); cancelAnimationFrame(animationId); showMainMenu(); };
+retryBtn.onclick = () => { gameOverOverlay.classList.add("hidden"); initGame(); };
+backMenuBtn.onclick = () => { gameOverOverlay.classList.add("hidden"); cancelAnimationFrame(animationId); showMainMenu(); };
+window.addEventListener("keydown", e => { if (["ArrowLeft", "ArrowRight", "a", "d", "A", "D", " "].includes(e.key)) e.preventDefault(); if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") keys.left = true; if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") keys.right = true; if (e.key === " " && !gameOver) gamePaused ? resumeGame() : pauseBtn.click(); });
+window.addEventListener("keyup", e => { if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") keys.left = false; if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") keys.right = false; });
+window.addEventListener("blur", () => { if (!gameOver && !document.getElementById("gameScene").classList.contains("hidden")) pauseBtn.click(); });
 window.addEventListener("resize", resizeCanvas);
