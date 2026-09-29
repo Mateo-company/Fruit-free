@@ -203,6 +203,10 @@ body {
     border: 6px solid;
     border-image-slice: 1;
     animation: rgbBorder 3s linear infinite;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
 }
 
 /* El canvas siempre coincide con el tablero: dibujo y colisiones usan la misma área. */
@@ -272,6 +276,9 @@ body {
     background: rgba(0, 27, 73, .6);
     font-size: 22px;
     touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .touchBtn:active { background: #ffcc00; color: #111; }

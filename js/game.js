@@ -114,5 +114,7 @@ retryBtn.onclick = () => { gameOverOverlay.classList.add("hidden"); initGame(); 
 backMenuBtn.onclick = () => { gameOverOverlay.classList.add("hidden"); cancelAnimationFrame(animationId); showMainMenu(); };
 window.addEventListener("keydown", e => { if (["ArrowLeft", "ArrowRight", "a", "d", "A", "D", " "].includes(e.key)) e.preventDefault(); if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") keys.left = true; if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") keys.right = true; if (e.key === " " && !gameOver) gamePaused ? resumeGame() : pauseBtn.click(); });
 window.addEventListener("keyup", e => { if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") keys.left = false; if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") keys.right = false; });
+document.getElementById("gameScene").addEventListener("contextmenu", event => event.preventDefault());
+document.getElementById("gameScene").addEventListener("selectstart", event => event.preventDefault());
 window.addEventListener("blur", () => { if (!gameOver && !document.getElementById("gameScene").classList.contains("hidden")) pauseBtn.click(); });
 window.addEventListener("resize", resizeCanvas);
