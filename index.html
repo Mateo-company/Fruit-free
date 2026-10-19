@@ -11,7 +11,7 @@
 <body>
 
 <!-- VERSION -->
-<div id="versionBox">v1.1.1</div>
+<div id="versionBox">v1.2.0</div>
 
 <!-- ====== UI GENERAL ====== -->
 <div id="ui">
@@ -19,11 +19,57 @@
     <!-- ====== MENU PRINCIPAL ====== -->
     <div id="menu" class="menuScreen center">
         <h1 class="title">Fruit Free</h1>
-        <button class="btn" id="btnPlay">Jugar</button>
+        <button class="btn" id="btnModes">Modos</button>
+        <button class="btn" id="btnSkins">Tienda de skins</button>
         <button class="btn" id="btnOptions">Opciones</button>
-        <button class="btn" id="btnCredits">Créditos</button>
         <button class="btn" id="btncalific">Sugerencias</button>
-        <button class="btn" id="btnmjrs">Novedades</button>
+    </div>
+
+    <div id="skinsMenu" class="submenu hidden center">
+        <h2>Tienda de skins</h2>
+        <p class="coinBalance">Monedas: <span id="skinCoins">0</span> 🪙</p>
+        <button class="btn skinBtn" data-skin="original">Canasta original — Gratis</button>
+        <button class="btn skinBtn" data-skin="gold">Canasta dorada — 30 🪙</button>
+        <button class="btn skinBtn" data-skin="neon">Canasta neón — 60 🪙</button>
+        <button class="btn" id="btnBackSkins">Volver</button>
+    </div>
+
+    <div id="guideMenu" class="submenu hidden center">
+        <h2>Guía de Fruit Free</h2>
+        <div class="guideBox">
+            <h3>Objetivo</h3>
+            <p>Recoge las frutas buenas con la canasta y evita las frutas malas. Tienes 3 vidas.</p>
+
+            <h3>Controles</h3>
+            <p><strong>PC:</strong> flechas ← → o teclas A / D.</p>
+            <p><strong>Móvil:</strong> usa los botones ◀ y ▶. Pausa con el botón PAUSA o la barra espaciadora en PC.</p>
+
+            <h3>Frutas del modo Clásico</h3>
+            <p>✅ <strong>Buenas:</strong> manzana, naranja, kiwi y cereza. Dan puntos.</p>
+            <p>❌ <strong>Mala:</strong> manzana mala. Quita una vida.</p>
+
+            <h3>Modo Difícil</h3>
+            <p>✅ Naranja, kiwi y cereza son buenas.</p>
+            <p>⚠️ La manzana puede convertirse en Mala durante la caída: desde ahí es quita vida.</p>
+            <p>❌ la manzana mala se puede seguir echando a perder</p>
+            <p>Las frutas malas quitan una vida. Si dejas caer una buena, pierdes 1 punto y se reinicia la racha.</p>
+
+            <h3>Rachas y puntos</h3>
+            <p>La racha empieza al recoger 2 frutas buenas seguidas.</p>
+            <p> Desde una racha de 5, cada fruta buena vale 2 puntos.</p>
+
+            <h3>Monedas y skins</h3>
+            <p>Al terminar una partida ganas 1 🪙 por cada 5 puntos obtenidos. Úsalas en la Tienda de skins para desbloquear y equipar estilos para tu canasta.</p>
+        </div>
+        <button class="btn" id="btnBackGuide">Volver</button>
+    </div>
+
+    <!-- ====== MODOS ====== -->
+    <div id="modesMenu" class="submenu hidden center">
+        <h2>Modos</h2>
+        <button class="btn" id="btnModeClassic">Modo Clásico</button>
+        <button class="btn" id="btnModeHard">Difícil</button>
+        <button class="btn" id="btnBackModes">Volver</button>
     </div>
 
     <!-- ====== OPCIONES ====== -->
@@ -35,7 +81,10 @@
             <button class="btn small" id="btnMusic">ON</button>
         </div>
 
-        <button class="btn" id="btnBackOptions">Volver</button>
+        <button class="btn small" id="btnGuide">Guía</button>
+        <button class="btn small" id="btnCredits">Créditos</button>
+        <button class="btn small" id="btnmjrs">Novedades</button>
+        <button class="btn" id="btnMainMenuOptions">Menú principal</button>
     </div>
 
     <!-- ====== CRÉDITOS ====== -->
@@ -54,10 +103,14 @@
         <div class="newsBox">
             <p>🟢 v1.1.1</p>
             <p>🟡 Novedades:</p>
-            <p>error al .</p>
+            <p>error al se añado un espacio de modos</p>
+            <p>se agrego un espaciod e guia</p>
+            <p>se cambiaron las frutas malas y buenas</p>
+            <p>se agrego un sistema de monedas</p>
+            <p>se agrego una tienda de skins</p>
+            <p>se conserva la fruta mala en el modo clásico</p>
             <hr>
             <p>Gracias por jugar Fruit Free.</p>
-            <p>Esta es la primera versión del juego.</p>
             <p>Tu opinión es importante para futuras actualizaciones.</p>
         </div>
 

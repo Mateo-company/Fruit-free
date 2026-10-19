@@ -3,11 +3,21 @@ const spriteGood = new Image();
 spriteGood.src = "assets/sprites/Manzana.png";
 const spriteBad = new Image();
 spriteBad.src = "assets/sprites/ManzanaMala.png";
+const spriteFreshApple = new Image();
+spriteFreshApple.src = "assets/sprites/Manzana_nueva.png";
+const spriteAppleChangeOne = new Image();
+spriteAppleChangeOne.src = "assets/sprites/ManzanaCambioUno.png";
+const spriteAppleChangeTwo = new Image();
+spriteAppleChangeTwo.src = "assets/sprites/ManzanaCambioDos.png";
+const HARD_APPLE_SCALE = 3.6;
 const goodSprites = [{ image: spriteGood, scale: 1 }];
+const hardGoodSprites = [];
 for (const [name, scale] of [["Naranja.png", .82], ["Kiwi.png", 1], ["cherry.png", .82]]) {
   const image = new Image();
   image.src = `assets/sprites/${name}`;
-  goodSprites.push({ image, scale });
+  const fruit = { image, scale };
+  goodSprites.push(fruit);
+  hardGoodSprites.push(fruit);
 }
 const spriteBasket = new Image();
 spriteBasket.src = "assets/sprites/Canasta.png";
@@ -31,7 +41,7 @@ const finalRecordText = document.getElementById("finalRecord");
 const retryBtn = document.getElementById("retryBtn"), backMenuBtn = document.getElementById("backMenuBtn");
 const scoreText = document.getElementById("score"), livesText = document.getElementById("lives");
 
-function recordKey() { return "fruitFree_record"; }
+function recordKey() { return `fruitFree_record_${currentMode}`; }
 function getRecord() { return Number(localStorage.getItem(recordKey())) || 0; }
 function saveRecord() { if (score > getRecord()) localStorage.setItem(recordKey(), score); }
 function resetGame() {
@@ -53,22 +63,43 @@ function resizeCanvas() {
   player.y = portraitMobile ? 300 : 172;
 }
 function spawnFruit() {
+  const hardMode = currentMode === "Dificil";
   const goodChance = .46;
   const speed = Math.min(95 + Math.floor(elapsedTime / 15) * 14 + Math.random() * 35, 310);
-  const good = Math.random() < goodChance;
+  let good = Math.random() < goodChance;
   // El dibujo es grande, pero el radio de colisión se mantiene pequeño y justo.
   const size = 34 + Math.random() * 5;
-  const fruitSprite = good ? goodSprites[Math.floor(Math.random() * goodSprites.length)] : { image: spriteBad, scale: 1 };
+  let fruitSprite;
+  if (hardMode && Math.random() < .05) {
+    // Aparición fija del 5%; no cambia durante la partida.
+    good = false;
+    fruitSprite = { image: spriteAppleChangeOne, scale: HARD_APPLE_SCALE };
+  } else if (good) {
+    fruitSprite = hardMode
+      ? [...hardGoodSprites, { image: spriteFreshApple, scale: HARD_APPLE_SCALE }][Math.floor(Math.random() * 4)]
+      : goodSprites[Math.floor(Math.random() * goodSprites.length)];
+  } else {
+    // En difícil, CambioDos reemplaza por completo a ManzanaMala.
+    fruitSprite = hardMode
+      ? { image: spriteAppleChangeTwo, scale: HARD_APPLE_SCALE }
+      : { image: spriteBad, scale: 1 };
+  }
+  const spoilChance = .20;
+  const isFreshApple = hardMode && fruitSprite.image === spriteFreshApple;
+  const isChangeOne = hardMode && fruitSprite.image === spriteAppleChangeOne;
+  const transition = isFreshApple && Math.random() < spoilChance ? "newToOne" : isChangeOne && Math.random() < spoilChance ? "oneToTwo" : "none";
   fruits.push({
     x: (Math.floor(Math.random() * COLUMNS) + .5) * (VIRTUAL_WIDTH / COLUMNS),
     y: -size, r: 9, size, speed, good,
-    sprite: fruitSprite.image, drawSize: size * fruitSprite.scale
+    sprite: fruitSprite.image, drawSize: size * fruitSprite.scale,
+    // Ruta decidida al nacer: CambioDos nunca puede regresar a CambioUno.
+    transition, spoilStage: isChangeOne ? "changeOne" : isFreshApple ? "fresh" : "final"
   });
 }
 function burst(x, y, color) { for (let i = 0; i < 8; i++) particles.push({ x, y, vx: (Math.random() - .5) * 75, vy: (Math.random() - .5) * 75, life: .45, color }); }
 function loseLife() { lives--; combo = 0; if (lives <= 0) triggerGameOver(); }
 function triggerGameOver() {
-  gameOver = true; gamePaused = true; saveRecord(); finalScoreText.textContent = score; finalRecordText.textContent = getRecord();
+  gameOver = true; gamePaused = true; saveRecord(); awardCoins(Math.floor(score / 5)); finalScoreText.textContent = score; finalRecordText.textContent = getRecord();
   gameOverOverlay.classList.remove("hidden");
 }
 function update(dt) {
@@ -79,6 +110,25 @@ function update(dt) {
   if (spawnTimer >= interval) { spawnFruit(); spawnTimer = 0; }
   for (let i = fruits.length - 1; i >= 0; i--) {
     const f = fruits[i]; f.y += f.speed * dt;
+    if (f.transition === "newToOne") {
+      const journey = Math.min(1, Math.max(0, f.y / player.y));
+      // Solo dos fases: nueva y CambioUno. El cambio sucede con anticipación.
+      if (journey >= .48 && f.spoilStage === "fresh") {
+        f.sprite = spriteAppleChangeOne;
+        f.drawSize = f.size * HARD_APPLE_SCALE;
+        f.good = false;
+        f.spoilStage = "changeOne";
+      }
+    }
+    if (f.transition === "oneToTwo" && f.spoilStage === "changeOne") {
+      const journey = Math.min(1, Math.max(0, f.y / player.y));
+      if (journey >= .48) {
+        f.sprite = spriteAppleChangeTwo;
+        f.drawSize = f.size * HARD_APPLE_SCALE;
+        f.good = false;
+        f.spoilStage = "final";
+      }
+    }
     const caught =
       f.x + f.r > player.x + player.hitOffsetX &&
       f.x - f.r < player.x + player.hitOffsetX + player.hitWidth &&
@@ -101,9 +151,31 @@ function draw() {
     if (image.complete && image.naturalWidth) gameCtx.drawImage(image, f.x - f.drawSize / 2, f.y - f.drawSize / 2, f.drawSize, f.drawSize);
     else { gameCtx.fillStyle = f.good ? "#e83f49" : "#4b354b"; gameCtx.beginPath(); gameCtx.arc(f.x, f.y, f.r, 0, Math.PI * 2); gameCtx.fill(); }
   }
-  if (spriteBasket.complete && spriteBasket.naturalWidth) gameCtx.drawImage(spriteBasket, player.x, player.y, player.width, player.height); else { gameCtx.fillStyle = "#b96a24"; gameCtx.fillRect(player.x, player.y, player.width, player.height); }
+  if (spriteBasket.complete && spriteBasket.naturalWidth) {
+    gameCtx.save();
+    if (selectedSkin === "gold") gameCtx.filter = "sepia(1) saturate(4) hue-rotate(350deg) brightness(1.2)";
+    if (selectedSkin === "neon") { gameCtx.filter = "hue-rotate(160deg) saturate(2.8)"; gameCtx.shadowColor = "#38f7ff"; gameCtx.shadowBlur = 12; }
+    gameCtx.drawImage(spriteBasket, player.x, player.y, player.width, player.height);
+    gameCtx.restore();
+  } else { gameCtx.fillStyle = "#b96a24"; gameCtx.fillRect(player.x, player.y, player.width, player.height); }
   for (const p of particles) { gameCtx.globalAlpha = p.life * 2; gameCtx.fillStyle = p.color; gameCtx.fillRect(p.x - 2, p.y - 2, 4, 4); } gameCtx.globalAlpha = 1;
-  if (combo >= 5) { gameCtx.fillStyle = "#fff"; gameCtx.font = "bold 12px monospace"; gameCtx.textAlign = "center"; gameCtx.fillText(`¡RACHA x${combo}!`, 160, 28); }
+  if (combo >= 2) {
+    const bannerWidth = 126, bannerHeight = 28, bannerX = (VIRTUAL_WIDTH - bannerWidth) / 2, bannerY = 45;
+    gameCtx.fillStyle = "rgba(11, 20, 53, .85)";
+    gameCtx.strokeStyle = "#55f5ff";
+    gameCtx.lineWidth = 2;
+    gameCtx.beginPath();
+    if (gameCtx.roundRect) gameCtx.roundRect(bannerX, bannerY, bannerWidth, bannerHeight, 8);
+    else gameCtx.rect(bannerX, bannerY, bannerWidth, bannerHeight);
+    gameCtx.fill(); gameCtx.stroke();
+    gameCtx.fillStyle = "#ffeb3b";
+    gameCtx.font = "bold 16px monospace";
+    gameCtx.textAlign = "center";
+    gameCtx.shadowColor = "#ff8a00";
+    gameCtx.shadowBlur = 8;
+    gameCtx.fillText(`¡RACHA x${combo}!`, VIRTUAL_WIDTH / 2, bannerY + 19);
+    gameCtx.shadowBlur = 0;
+  }
 }
 function gameLoop(ts) { if (gamePaused) return; const dt = Math.min(.05, (ts - lastTimestamp) / 1000); lastTimestamp = ts; update(dt); draw(); animationId = requestAnimationFrame(gameLoop); }
 function resumeGame() { if (gameOver) return; gamePaused = false; pauseOverlay.classList.add("hidden"); lastTimestamp = performance.now(); animationId = requestAnimationFrame(gameLoop); }
